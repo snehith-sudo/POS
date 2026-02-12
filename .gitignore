@@ -1,0 +1,24 @@
+# Node
+node_modules/
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# Backend build (if any)
+backend/dist/
+
+# Env files
+.env
+frontend/.env*
+backend/.env*
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
