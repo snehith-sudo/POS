@@ -1,0 +1,190 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ClientAPI</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.increff.project.api</a>
+</div>
+
+<h1>Coverage Summary for Class: ClientAPI (com.increff.project.api)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClientAPI</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (17/17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.increff.project.api;
+&nbsp;
+&nbsp;import com.increff.project.dao.ClientDAO;
+&nbsp;import com.increff.project.entity.ClientPojo;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.PageImpl;
+&nbsp;import org.springframework.data.domain.PageRequest;
+&nbsp;import org.springframework.data.domain.Sort;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import com.increff.project.exception.ApiException;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@Service
+&nbsp;@Transactional
+<b class="fc">&nbsp;public class ClientAPI {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ClientDAO clientDAO;
+&nbsp;
+&nbsp;    /* Adding a new Client */
+&nbsp;    @Transactional(rollbackFor = Exception.class)
+&nbsp;    public void addClient(ClientPojo client)
+&nbsp;    {
+<b class="fc">&nbsp;        ClientPojo existing = clientDAO.findClientbyName(client.getName());</b>
+<b class="fc">&nbsp;        if(!Objects.isNull(existing)) {throw new ApiException(&quot;Client already exists&quot;);}</b>
+<b class="fc">&nbsp;        clientDAO.addClient(client);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /* Finding by Name*/
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public ClientPojo findClientByName(String name)
+&nbsp;    {
+<b class="fc">&nbsp;        ClientPojo entity =  clientDAO.findClientbyName(name);</b>
+<b class="fc">&nbsp;        if(Objects.isNull(entity)) {</b>
+<b class="fc">&nbsp;            throw new ApiException(&quot;Invalid clientName: &quot; + name);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return entity;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /* Finding by Id*/
+&nbsp;    @Transactional(readOnly = true)
+<b class="fc">&nbsp;    public boolean existClientById(int id){return clientDAO.existbyClientId(id);}</b>
+&nbsp;
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public List&lt;String&gt; selectExistingClientNames(Set&lt;String&gt; clientNames)
+&nbsp;    {
+<b class="fc">&nbsp;        if (Objects.isNull(clientNames) || clientNames.isEmpty()) {return List.of();}</b>
+<b class="fc">&nbsp;        return clientDAO.selectExistingClientNames(new ArrayList&lt;&gt;(clientNames));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public List&lt;ClientPojo&gt; selectExistingClientWithIds(List&lt;Integer&gt; clientIds)
+&nbsp;    {
+<b class="fc">&nbsp;        if (Objects.isNull(clientIds) || clientIds.isEmpty()) {return List.of();}</b>
+<b class="fc">&nbsp;        return clientDAO.selectExistingClientWithIds(new ArrayList&lt;&gt;(clientIds));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public Page&lt;ClientPojo&gt; getAllOrders(int pageNumber, int pageSize)
+&nbsp;    {
+<b class="fc">&nbsp;        List&lt;ClientPojo&gt; orders = clientDAO.getPagedOrders(pageNumber, pageSize);</b>
+<b class="fc">&nbsp;        long totalElements = clientDAO.getTotalOrders();</b>
+<b class="fc">&nbsp;        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(&quot;name&quot;).descending());</b>
+<b class="fc">&nbsp;        return new PageImpl&lt;&gt;(orders, pageRequest, totalElements);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-10 13:23</div>
+</div>
+</body>
+</html>

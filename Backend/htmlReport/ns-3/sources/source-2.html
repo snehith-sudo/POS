@@ -1,0 +1,161 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > InventoryController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.increff.project.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: InventoryController (com.increff.project.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">InventoryController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.increff.project.controller;
+&nbsp;
+&nbsp;import com.increff.project.dto.InventoryDTO;
+&nbsp;import com.increff.project.model.data.InventoryData;
+&nbsp;import com.increff.project.model.form.InventoryForm;
+&nbsp;import com.increff.project.model.form.TsvForm;
+&nbsp;import com.increff.project.model.form.PageSizeForm;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/inventory&quot;)
+&nbsp;@CrossOrigin(origins = &quot;http://localhost:3000&quot;)
+<b class="nc">&nbsp;public class InventoryController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private InventoryDTO inventoryDTO;
+&nbsp;
+&nbsp;    /* Upload product-wise inventory via TSV */
+&nbsp;    @RequestMapping(method = RequestMethod.POST, path = &quot;/upload&quot;)
+&nbsp;    @ResponseStatus(HttpStatus.CREATED)
+&nbsp;    public Map&lt;String, String&gt; uploadBulkInventoryItems(@Valid @RequestBody TsvForm form) {
+<b class="nc">&nbsp;       return inventoryDTO.uploadInventoryItem(form);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /* Add a Single Inventory Item */
+&nbsp;    @RequestMapping(method = RequestMethod.POST, path = &quot;/singleupload&quot;)
+&nbsp;    @ResponseStatus(HttpStatus.CREATED)
+&nbsp;    public void uploadSingleInventory(@Valid @RequestBody InventoryForm form) {
+<b class="nc">&nbsp;        inventoryDTO.addSingleInventorItem(form);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /* Update a single Inventory */
+&nbsp;    @RequestMapping(method = RequestMethod.PUT,path=&quot;/singleupdate&quot;)
+&nbsp;    public void updateSingleInventoryItem(@Valid @RequestBody InventoryForm form)
+&nbsp;    {
+<b class="nc">&nbsp;        inventoryDTO.updateSingleInventoryItem(form);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /* Get inventory (paginated) */
+&nbsp;    @RequestMapping(method = RequestMethod.POST,path = &quot;/pages&quot;)
+&nbsp;    public Page&lt;InventoryData&gt; getAllInventoryItemsPaginated(@RequestBody PageSizeHelper form) {
+<b class="nc">&nbsp;        return inventoryDTO.getAllOrders(form);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /* Find a single inventory item by productId */
+&nbsp;    @RequestMapping(method = RequestMethod.POST, path = &quot;/barcode&quot;)
+&nbsp;    public Map&lt;String ,Object&gt; findInventoryItemByBarcode(@Valid @RequestBody InventoryForm form) {
+<b class="nc">&nbsp;        return inventoryDTO.findInventoryItemByBarcode(form);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-10 13:23</div>
+</div>
+</body>
+</html>

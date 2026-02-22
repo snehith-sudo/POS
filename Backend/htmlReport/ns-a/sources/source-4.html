@@ -1,0 +1,164 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AuthDTO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.increff.project.security</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthDTO (com.increff.project.security)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthDTO</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.increff.project.security;
+&nbsp;
+&nbsp;import com.increff.project.entity.AuthPojo;
+&nbsp;import com.increff.project.exception.ApiException;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.servlet.http.HttpServletResponse;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;public class AuthDTO{</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private AuthAPI authAPI;
+&nbsp;
+&nbsp;    public void signup(AuthForm request) {
+&nbsp;
+<b class="fc">&nbsp;        if (request.getUsername() == null || request.getPassword() == null) {</b>
+<b class="fc">&nbsp;            throw new ApiException(&quot;Username and password required&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        authAPI.createUser(request.getUsername(), request.getPassword());</b>
+&nbsp;    }
+&nbsp;    public AuthUserData login(AuthForm request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ApiException {
+&nbsp;
+<b class="fc">&nbsp;        String username = request.getUsername().trim().toLowerCase();</b>
+<b class="fc">&nbsp;        String password = request.getPassword();</b>
+&nbsp;
+<b class="fc">&nbsp;        return authAPI.login(username,password,httpRequest,httpResponse);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public AuthUserData me() {
+&nbsp;
+<b class="fc">&nbsp;        AuthPojo user = authAPI.getCurrentUser();</b>
+&nbsp;
+<b class="fc">&nbsp;        System.out.println(&quot;role is &quot;+ user.getRole());</b>
+<b class="fc">&nbsp;        System.out.println(&quot;Username is &quot;+user.getUsername());</b>
+&nbsp;
+<b class="fc">&nbsp;        AuthUserData data = new AuthUserData();</b>
+<b class="fc">&nbsp;        data.setRole(user.getRole());</b>
+<b class="fc">&nbsp;        data.setUsername(user.getUsername());</b>
+&nbsp;
+<b class="fc">&nbsp;        System.out.println(data.getUsername()+&quot;  &quot;+data.getRole());</b>
+<b class="fc">&nbsp;        return data;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-10 13:23</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > OrderAPI</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.increff.project.api</a>
+</div>
+
+<h1>Coverage Summary for Class: OrderAPI (com.increff.project.api)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OrderAPI</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (22/22)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.increff.project.api;
+&nbsp;
+&nbsp;import com.increff.project.dao.OrderDAO;
+&nbsp;import com.increff.project.entity.ClientPojo;
+&nbsp;import com.increff.project.entity.OrderPojo;
+&nbsp;import com.increff.project.model.constants.OrderStatus;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.*;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.time.Instant;
+&nbsp;import java.time.ZonedDateTime;
+&nbsp;import java.util.List;
+&nbsp;@Service
+&nbsp;@Transactional
+<b class="fc">&nbsp;public class OrderAPI {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private OrderDAO orderDao;
+&nbsp;
+&nbsp;    @Transactional(rollbackFor = Exception.class)
+&nbsp;    public int createOrder()
+&nbsp;    {
+<b class="fc">&nbsp;        OrderPojo order = new OrderPojo();</b>
+<b class="fc">&nbsp;        order.setOrderTime(ZonedDateTime.now());</b>
+<b class="fc">&nbsp;        order.setStatus(OrderStatus.CREATED);</b>
+<b class="fc">&nbsp;        orderDao.createOrder(order);</b>
+<b class="fc">&nbsp;        return order.getId();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(rollbackFor = Exception.class)
+&nbsp;    public void updateOrderStatus(OrderPojo updatedOrder) {
+<b class="fc">&nbsp;        orderDao.updateOrder(updatedOrder);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+<b class="fc">&nbsp;    public OrderPojo findByOrderId(int id){return orderDao.findByOrderId(id);}</b>
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public List&lt;OrderPojo&gt; getAllPaginatedOrders(int page, int size) {
+<b class="fc">&nbsp;        return orderDao.getAllPaginatedOrders(page, size);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public Page&lt;OrderPojo&gt; findBetweenDates(ZonedDateTime startDate,ZonedDateTime endDate,int page,int size){
+&nbsp;
+<b class="fc">&nbsp;        List&lt;OrderPojo&gt; list = orderDao.findBetweenDate(startDate, endDate, page, size);</b>
+<b class="fc">&nbsp;        long total = orderDao.getTotalOrdersBetweenDates(startDate, endDate);</b>
+&nbsp;
+<b class="fc">&nbsp;        Pageable pageable = PageRequest.of(page, size);</b>
+&nbsp;
+<b class="fc">&nbsp;        return new PageImpl&lt;&gt;(list, pageable, total);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public Page&lt;OrderPojo&gt; getByOrderStatus(OrderStatus status,int page,int size){
+&nbsp;
+<b class="fc">&nbsp;        List&lt;OrderPojo&gt; list =  orderDao.getByOrderStatus(status,page,size);</b>
+<b class="fc">&nbsp;        long total = orderDao.getTotalOrderByOrderStatus(status);</b>
+&nbsp;
+<b class="fc">&nbsp;        Pageable pageable = PageRequest.of(page, size);</b>
+<b class="fc">&nbsp;        return new PageImpl&lt;&gt;(list, pageable, total);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public Page&lt;OrderPojo&gt; getAllOrders(int pageNumber, int pageSize) {
+&nbsp;
+<b class="fc">&nbsp;        int offset = pageNumber * pageSize;</b>
+<b class="fc">&nbsp;        List&lt;OrderPojo&gt; orders = orderDao.getPagedOrders(offset, pageSize);</b>
+<b class="fc">&nbsp;        long totalElements = orderDao.getTotalOrders();</b>
+<b class="fc">&nbsp;        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(&quot;name&quot;).descending());</b>
+<b class="fc">&nbsp;        return new PageImpl&lt;&gt;(orders, pageRequest, totalElements);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-10 13:23</div>
+</div>
+</body>
+</html>

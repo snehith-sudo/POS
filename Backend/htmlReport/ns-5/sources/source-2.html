@@ -1,0 +1,209 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > InventoryDTO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.increff.project.dto</a>
+</div>
+
+<h1>Coverage Summary for Class: InventoryDTO (com.increff.project.dto)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">InventoryDTO</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    71.4%
+  </span>
+  <span class="absValue">
+    (5/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    72%
+  </span>
+  <span class="absValue">
+    (18/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.increff.project.dto;
+&nbsp;
+&nbsp;
+&nbsp;import com.increff.project.entity.ProductPojo;
+&nbsp;import com.increff.project.exception.ApiException;
+&nbsp;import com.increff.project.model.data.InventoryData;
+&nbsp;import com.increff.project.useCase.InventoryUseCase;
+&nbsp;import com.increff.project.model.form.InventoryForm;
+&nbsp;import com.increff.project.model.form.TsvForm;
+&nbsp;import com.increff.project.utils.helpers.AbstractValidateNormalize;
+&nbsp;import com.increff.project.entity.InventoryPojo;
+&nbsp;import com.increff.project.useCase.ProductUseCase;
+&nbsp;import com.increff.project.model.form.PageSizeForm;
+&nbsp;import com.increff.project.utils.helpers.TsvParserHelper;
+&nbsp;import com.increff.project.utils.utils.InventoryUtil;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.PageImpl;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import static com.increff.project.model.helpers.InventoryHelper.convertFormToEntity;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;public class InventoryDTO extends AbstractValidateNormalize {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private InventoryFlow inventoryFlow;
+&nbsp;
+&nbsp;    /* TSV upload : product-wise inventory */
+&nbsp;    public Map&lt;String, String&gt; uploadInventoryItem(TsvForm form)
+&nbsp;    {
+<b class="nc">&nbsp;        String base64TSV = form.getBase64file();</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;String[]&gt; rows = TsvParserHelper.parseBase64Tsv(base64TSV);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (rows.isEmpty()) {throw new ApiException(&quot;TSV file is empty&quot;);}</b>
+&nbsp;
+<b class="nc">&nbsp;        if (rows.size() &gt; 5000) {throw new ApiException(&quot;TSV row limit exceeded (max 5000)&quot;);}</b>
+&nbsp;
+<b class="nc">&nbsp;       return inventoryFlow.uploadProductWiseInventory(rows);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addSingleInventorItem(InventoryForm form)
+&nbsp;    {
+&nbsp;        validateNormalizeInventory(form);
+<b class="fc">&nbsp;        InventoryPojo InventoryItem = convertFormToEntity(form);</b>
+&nbsp;        inventoryFlow.addSingleInventoryItem(InventoryItem,form.getBarcode());
+&nbsp;    }
+&nbsp;
+&nbsp;    public void updateSingleInventoryItem(InventoryForm form)
+&nbsp;    {
+&nbsp;        validateNormalizeInventory(form);
+<b class="fc">&nbsp;        InventoryPojo InventoryItem = convertFormToEntity(form);</b>
+&nbsp;        inventoryFlow.updateSingleInventoryItem(InventoryItem,form.getBarcode());
+&nbsp;    }
+&nbsp;
+&nbsp;    public Map&lt;String ,Object&gt; findInventoryItemByBarcode(InventoryForm form)
+&nbsp;    {
+<b class="fc">&nbsp;        String barcode = form.getBarcode();</b>
+<b class="fc">&nbsp;        validateNormalizeString(barcode,&quot;Barcode&quot;);</b>
+<b class="fc">&nbsp;        return inventoryFlow.findInventoryItemByBarcode(barcode);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Page&lt;InventoryData&gt; getAllOrders(PageSizeHelper form) {
+&nbsp;
+<b class="fc">&nbsp;        Page&lt;InventoryPojo&gt; inventoryPojoPage = inventoryFlow.getAllOrders(form.getPage(), form.getSize());</b>
+<b class="fc">&nbsp;        List&lt;ProductPojo&gt; products = inventoryFlow.selectExistingProductsWithIds(inventoryPojoPage);</b>
+&nbsp;
+<b class="fc">&nbsp;        Map&lt;Integer, ProductPojo&gt; productMap =</b>
+<b class="fc">&nbsp;                products.stream().collect(Collectors.toMap(ProductPojo::getId, p -&gt; p));</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;InventoryData&gt; dataList = inventoryPojoPage.getContent()</b>
+<b class="fc">&nbsp;                .stream()</b>
+<b class="fc">&nbsp;                .map(inv -&gt; InventoryUtil.convertEntityToData(inv, productMap.get(inv.getProductId())))</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        return new PageImpl&lt;&gt;(</b>
+<b class="fc">&nbsp;                dataList,</b>
+<b class="fc">&nbsp;                inventoryPojoPage.getPageable(),</b>
+<b class="fc">&nbsp;                inventoryPojoPage.getTotalElements()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public void validateNormalizeInventory(InventoryForm form)
+&nbsp;    {
+<b class="nc">&nbsp;        validateNormalizeString(form.getBarcode(),&quot;Barcode&quot;);</b>
+<b class="nc">&nbsp;        validateNormalizeInteger(form.getQuantity(),&quot;Quantity&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-10 13:23</div>
+</div>
+</body>
+</html>

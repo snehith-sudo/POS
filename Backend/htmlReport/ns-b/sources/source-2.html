@@ -1,0 +1,314 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > InventoryFlow</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.increff.project.useCase</a>
+</div>
+
+<h1>Coverage Summary for Class: InventoryFlow (com.increff.project.useCase)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">InventoryFlow</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55.6%
+  </span>
+  <span class="absValue">
+    (5/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    53.8%
+  </span>
+  <span class="absValue">
+    (14/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    35.9%
+  </span>
+  <span class="absValue">
+    (28/78)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.increff.project.useCase;
+&nbsp;
+&nbsp;import com.increff.project.api.InventoryAPI;
+&nbsp;import com.increff.project.api.ProductAPI;
+&nbsp;import com.increff.project.entity.ClientPojo;
+&nbsp;import com.increff.project.exception.ApiException;
+&nbsp;import com.increff.project.entity.InventoryPojo;
+&nbsp;import com.increff.project.entity.ProductPojo;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Service
+&nbsp;@Transactional
+<b class="fc">&nbsp;public class InventoryFlow {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private InventoryAPI inventoryAPI;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ProductAPI productAPI;
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public Page&lt;InventoryPojo&gt; getAllOrders(int pageNumber, int pageSize){
+<b class="fc">&nbsp;        return inventoryAPI.getAllOrders(pageNumber,pageSize);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public List&lt;ProductPojo&gt; selectExistingProductsWithIds(Page&lt;InventoryPojo&gt; inventoryPojoPage){
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Integer&gt; productIds = inventoryPojoPage.getContent()</b>
+<b class="nc">&nbsp;                .stream()</b>
+<b class="nc">&nbsp;                .map(InventoryPojo::getProductId)</b>
+<b class="nc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="nc">&nbsp;        return productAPI.selectExistingProductsWithIds(productIds);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(rollbackFor = Exception.class)
+&nbsp;    public void addSingleInventoryItem(InventoryPojo Item, String barcode)
+&nbsp;    {
+<b class="fc">&nbsp;        ProductPojo product = productAPI.getByBarcode(barcode);</b>
+<b class="fc">&nbsp;        if(Objects.isNull(product))</b>
+&nbsp;        {
+<b class="fc">&nbsp;            throw new ApiException(&quot;Item is not present in DB , Barcode not matched&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if(inventoryAPI.existInventoryItemByProductId(product.getId()))</b>
+&nbsp;        {
+<b class="fc">&nbsp;            throw new ApiException(&quot;Item with this Product ID already present,Try updating this inventory&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Item.setProductId(product.getId());</b>
+<b class="fc">&nbsp;        inventoryAPI.addInventoryItem(Item);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(rollbackFor = Exception.class)
+&nbsp;    public void updateSingleInventoryItem(InventoryPojo Item,String barcode)
+&nbsp;    {
+<b class="fc">&nbsp;        ProductPojo product = productAPI.getByBarcode(barcode);</b>
+<b class="fc">&nbsp;        if(Objects.isNull(product))</b>
+&nbsp;        {
+<b class="fc">&nbsp;            throw new ApiException(&quot;Item is not present in DB , Barcode not matched&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        InventoryPojo inventoryItem = inventoryAPI.findInventoryItemByProductId(product.getId());</b>
+<b class="fc">&nbsp;        if(Objects.isNull(inventoryItem))</b>
+&nbsp;        {
+<b class="fc">&nbsp;            throw new ApiException(&quot;Item with this Product ID not present,Try creat this inventory&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;        if(inventoryItem.getQuantity() &gt; Item.getQuantity() ){</b>
+<b class="fc">&nbsp;            throw new ApiException(&quot;Can&#39;t decrease the quantity without ordering&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        Item.setId(inventoryItem.getId());</b>
+<b class="fc">&nbsp;        Item.setProductId(product.getId());</b>
+&nbsp;
+<b class="fc">&nbsp;        inventoryAPI.updateInventoryItem(Item);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public void validateStock(int productId,int requiredQty)
+&nbsp;    {
+<b class="fc">&nbsp;        InventoryPojo inventory = inventoryAPI.findInventoryItemByProductId(productId);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (Objects.isNull(inventory)) {</b>
+<b class="fc">&nbsp;            throw new ApiException(&quot;Inventory not found for productId: &quot; + productId);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (inventory.getQuantity() &lt; requiredQty) {</b>
+<b class="fc">&nbsp;            throw new ApiException(</b>
+<b class="fc">&nbsp;                    &quot;Insufficient stock for productId: &quot; + productId +</b>
+<b class="fc">&nbsp;                            &quot;. Available: &quot; + inventory.getQuantity() +</b>
+<b class="fc">&nbsp;                            &quot;, Required: &quot; + requiredQty</b>
+&nbsp;            );
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public void deductStock(int productId, int qty) {
+&nbsp;
+<b class="nc">&nbsp;        InventoryPojo inventory = inventoryAPI.findInventoryItemByProductId(productId);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (Objects.isNull(inventory)) {</b>
+<b class="nc">&nbsp;            throw new ApiException(&quot;Inventory not found for productId: &quot; + productId);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        inventory.setQuantity(inventory.getQuantity() - qty);</b>
+<b class="nc">&nbsp;        inventoryAPI.updateInventoryItem(inventory);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public Map&lt;String ,Object&gt; findInventoryItemByBarcode(String barcode)
+&nbsp;    {
+<b class="nc">&nbsp;        ProductPojo prod = productAPI.getByBarcode(barcode);</b>
+<b class="nc">&nbsp;        int productId =  prod.getId();</b>
+&nbsp;
+<b class="nc">&nbsp;        InventoryPojo entity =  inventoryAPI.findInventoryItemByProductId(productId);</b>
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;String, Object&gt; map = new LinkedHashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        map.put(&quot;id&quot;,entity.getId());</b>
+<b class="nc">&nbsp;        map.put(&quot;barcode&quot;, prod.getBarcode());</b>
+<b class="nc">&nbsp;        map.put(&quot;name&quot;, prod.getName());</b>
+<b class="nc">&nbsp;        map.put(&quot;quantity&quot;, entity.getQuantity());</b>
+<b class="nc">&nbsp;        map.put(&quot;Mrp&quot;,prod.getMrp());</b>
+&nbsp;
+<b class="nc">&nbsp;        return map;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Map&lt;String, String&gt; uploadProductWiseInventory(List&lt;String[]&gt; rows)
+&nbsp;    {
+<b class="nc">&nbsp;        Map&lt;String, String&gt; results = new LinkedHashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        Set&lt;String&gt; seenBarcodes = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;        List&lt;String&gt; allBarcodes = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;        // 1. Validate structure + collect barcodes
+<b class="nc">&nbsp;        for (String[] row : rows) {allBarcodes.add(row[0].trim());}</b>
+&nbsp;
+&nbsp;        // 2. Fetch existing barcodes in ONE DB call // returns all addable id &amp; barcodes
+<b class="nc">&nbsp;        List&lt;Object[]&gt; existingBarcodes = productAPI.selectExistingBarcodes(allBarcodes);</b>
+<b class="nc">&nbsp;        Set&lt;String&gt; existingBarcodeSet = existingBarcodes.stream()</b>
+<b class="nc">&nbsp;                                         .map(row -&gt; (String) row[0])</b>
+<b class="nc">&nbsp;                                          .collect(Collectors.toSet());</b>
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;String, Integer&gt; barcodeToIdMap =  existingBarcodes.stream()</b>
+<b class="nc">&nbsp;                                              .collect(Collectors.toMap(</b>
+<b class="nc">&nbsp;                                              row -&gt; (String) row[0],</b>
+<b class="nc">&nbsp;                                              row -&gt; (Integer) row[1]</b>
+&nbsp;                                               ));
+&nbsp;
+&nbsp;        // 3 Getting all Product-Id&#39;s present in Inventory Database
+<b class="nc">&nbsp;        List&lt;Integer&gt; existingProductIdsInInventoryTable = inventoryAPI.getAllProductIds();</b>
+&nbsp;
+&nbsp;        //Get Barcodes for these All existing Product Id&#39;s
+<b class="nc">&nbsp;        List&lt;String&gt; existingBarcodesInInventoryTable = productAPI.selectExistingBarcodesFromProductId(existingProductIdsInInventoryTable);</b>
+&nbsp;
+&nbsp;        // 4. Process rows
+<b class="nc">&nbsp;        for (String[] row : rows) {</b>
+&nbsp;
+<b class="nc">&nbsp;            String barcode = row[0].trim();</b>
+&nbsp;            int quantity;
+&nbsp;
+&nbsp;            // Quantity parsing
+&nbsp;            try {
+<b class="nc">&nbsp;                quantity = Integer.parseInt(row[1].trim());</b>
+&nbsp;            } catch (NumberFormatException e) {
+<b class="nc">&nbsp;                results.put(barcode, &quot;Invalid quantity&quot;);</b>
+&nbsp;                continue;
+&nbsp;            }
+<b class="nc">&nbsp;            if (!seenBarcodes.add(barcode)) {</b>
+<b class="nc">&nbsp;                results.put(barcode, &quot;Duplicate barcode in TSV&quot;);</b>
+&nbsp;                continue;
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            if (!existingBarcodeSet.contains(barcode)) {</b>
+<b class="nc">&nbsp;                results.put(barcode, &quot;Barcode does not exist ,Matching productId is not found&quot;);</b>
+&nbsp;                continue;
+&nbsp;            }
+<b class="nc">&nbsp;            if(existingBarcodesInInventoryTable.contains(barcode)){</b>
+<b class="nc">&nbsp;                results.put(barcode, &quot;Barcode exist in Inventory Table,So Try updating the Item&quot;);</b>
+&nbsp;                continue;
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            InventoryPojo entity = new InventoryPojo();</b>
+<b class="nc">&nbsp;            entity.setProductId(barcodeToIdMap.get(barcode));</b>
+<b class="nc">&nbsp;            entity.setQuantity(quantity);</b>
+&nbsp;
+<b class="nc">&nbsp;            addSingleInventoryItem(entity,barcode);</b>
+<b class="nc">&nbsp;            results.put(barcode, &quot;SUCCESS&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return results;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-10 13:23</div>
+</div>
+</body>
+</html>

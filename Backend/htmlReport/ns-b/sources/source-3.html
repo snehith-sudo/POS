@@ -1,0 +1,227 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > InvoicePdfGenerator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.increff.project.useCase</a>
+</div>
+
+<h1>Coverage Summary for Class: InvoicePdfGenerator (com.increff.project.useCase)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">InvoicePdfGenerator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/49)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.increff.project.useCase;
+&nbsp;
+&nbsp;
+&nbsp;import com.increff.project.utils.utils.InvoiceData;
+&nbsp;import com.increff.project.utils.utils.InvoiceItem;
+&nbsp;import com.itextpdf.kernel.pdf.PdfDocument;
+&nbsp;import com.itextpdf.kernel.pdf.PdfWriter;
+&nbsp;import com.itextpdf.layout.Document;
+&nbsp;import com.itextpdf.layout.borders.Border;
+&nbsp;import com.itextpdf.layout.element.*;
+&nbsp;import com.itextpdf.layout.properties.TextAlignment;
+&nbsp;import com.itextpdf.layout.properties.UnitValue;
+&nbsp;import org.springframework.stereotype.Service; // Optional: Remove if not using Spring
+&nbsp;
+&nbsp;import java.io.OutputStream;
+&nbsp;
+&nbsp;@Service // Optional annotation
+<b class="nc">&nbsp;public class InvoicePdfGenerator {</b>
+&nbsp;    
+&nbsp;    public void generateInvoicePdf(InvoiceData data, OutputStream outputStream) {
+&nbsp;        try {
+<b class="nc">&nbsp;            PdfWriter writer = new PdfWriter(outputStream);</b>
+<b class="nc">&nbsp;            PdfDocument pdf = new PdfDocument(writer);</b>
+<b class="nc">&nbsp;            Document document = new Document(pdf);</b>
+&nbsp;
+&nbsp;            // --- HEADER SECTION ---
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;INCREFF&quot;)</b>
+<b class="nc">&nbsp;                    .setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));</b>
+&nbsp;
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;Incredible Efficiency&quot;)</b>
+<b class="nc">&nbsp;                    .setTextAlignment(TextAlignment.CENTER).setItalic());</b>
+&nbsp;
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;POS System&quot;)</b>
+<b class="nc">&nbsp;                    .setBold().setTextAlignment(TextAlignment.CENTER));</b>
+&nbsp;
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;123 Main Street, City, Country\n+1-234-567-8900 | support@possystem.com&quot;)</b>
+<b class="nc">&nbsp;                    .setTextAlignment(TextAlignment.CENTER).setFontSize(10));</b>
+&nbsp;
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;\n&quot;)); // Spacer</b>
+&nbsp;
+&nbsp;            // --- INVOICE INFO ---
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;Invoice #: INV-&quot; + data.getOrderId()).setBold());</b>
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;Order #: &quot; + data.getOrderId()).setBold());</b>
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;Date: &quot; + data.getInvoiceDate()));</b>
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;Payment: CASH&quot;).setBold());</b>
+&nbsp;
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;\n&quot;));</b>
+&nbsp;
+&nbsp;            // --- PRODUCT TABLE ---
+&nbsp;            // Columns: #, Product, Barcode, Qty, Unit Price, Total
+<b class="nc">&nbsp;            float[] columnWidths = {1, 4, 3, 1, 2, 2};</b>
+<b class="nc">&nbsp;            Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();</b>
+&nbsp;
+&nbsp;            // Headers
+<b class="nc">&nbsp;            String[] headers = {&quot;#&quot;, &quot;Product&quot;, &quot;Barcode&quot;, &quot;Qty&quot;, &quot;Unit Price&quot;, &quot;Total&quot;};</b>
+<b class="nc">&nbsp;            for (String h : headers) {</b>
+<b class="nc">&nbsp;                table.addHeaderCell(new Cell().add(new Paragraph(h).setBold()));</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Rows
+<b class="nc">&nbsp;            int count = 1;</b>
+<b class="nc">&nbsp;            for (InvoiceItem item : data.getItems()) {</b>
+<b class="nc">&nbsp;                double totalItemPrice = item.getQuantity() * item.getSellingPrice();</b>
+&nbsp;
+<b class="nc">&nbsp;                table.addCell(new Cell().add(new Paragraph(String.valueOf(count++))));</b>
+<b class="nc">&nbsp;                table.addCell(new Cell().add(new Paragraph(item.getName())));</b>
+<b class="nc">&nbsp;                table.addCell(new Cell().add(new Paragraph(item.getBarcode())));</b>
+<b class="nc">&nbsp;                table.addCell(new Cell().add(new Paragraph(String.valueOf(item.getQuantity()))));</b>
+<b class="nc">&nbsp;                table.addCell(new Cell().add(new Paragraph(String.format(&quot;%.2f&quot;, item.getSellingPrice()))));</b>
+<b class="nc">&nbsp;                table.addCell(new Cell().add(new Paragraph(String.format(&quot;%.2f&quot;, totalItemPrice))));</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            document.add(table);</b>
+&nbsp;
+&nbsp;            // --- FOOTER &amp; TOTALS ---
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;\n&quot;));</b>
+&nbsp;
+&nbsp;            // Totals Table (Right Aligned)
+<b class="nc">&nbsp;            Table totalsTable = new Table(UnitValue.createPercentArray(new float[]{4, 1})).useAllAvailableWidth();</b>
+&nbsp;
+<b class="nc">&nbsp;            addTotalRow(totalsTable, &quot;Grand Total:&quot;, data.getTotalAmount(), true);</b>
+<b class="nc">&nbsp;            addTotalRow(totalsTable, &quot;Amount Paid:&quot;, data.getTotalAmount(), false); // Assuming full payment</b>
+<b class="nc">&nbsp;            addTotalRow(totalsTable, &quot;Change:&quot;, 0.00, false);</b>
+&nbsp;
+<b class="nc">&nbsp;            document.add(totalsTable);</b>
+&nbsp;
+&nbsp;            // --- CLOSING ---
+<b class="nc">&nbsp;            document.add(new Paragraph(&quot;\nThank you for your business! | Generated on: &quot; + data.getInvoiceDate())</b>
+<b class="nc">&nbsp;                    .setTextAlignment(TextAlignment.CENTER).setFontSize(10));</b>
+&nbsp;
+&nbsp;            document.close();
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;Error generating PDF&quot;, e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    private void addTotalRow(Table table, String label, double amount, boolean isBold) {
+<b class="nc">&nbsp;        Paragraph labelPara = new Paragraph(label).setTextAlignment(TextAlignment.RIGHT);</b>
+<b class="nc">&nbsp;        Paragraph amountPara = new Paragraph(String.format(&quot;%.2f&quot;, amount)).setTextAlignment(TextAlignment.RIGHT);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (isBold) {</b>
+<b class="nc">&nbsp;            labelPara.setBold();</b>
+<b class="nc">&nbsp;            amountPara.setBold();</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        table.addCell(new Cell().add(labelPara).setBorder(Border.NO_BORDER));</b>
+<b class="nc">&nbsp;        table.addCell(new Cell().add(amountPara).setBorder(Border.NO_BORDER));</b>
+&nbsp;    }
+&nbsp;}//@Transactional(readOnly = true)
+&nbsp;//@Transactional(rollbackFor = Exception.class)
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-10 13:23</div>
+</div>
+</body>
+</html>

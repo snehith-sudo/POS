@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* LabeledInput styles (floating label) */
+.labeled-input-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+.labeled-input-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 4px;
+  height: 18px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.labeled-input-label.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.labeled-input-field {
+  padding: 10px 14px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.15s ease;
+}
+
+.labeled-input-field:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+}
+
+.labeled-input-field::placeholder {
+  color: var(--muted, #9ca3af);
+}
+
+
+/* Generic floating-label pattern
+   Usage (input must come BEFORE the label):
+   <div class="floating-label">
+     <input placeholder=" " id="foo" />
+     <label for="foo">Field label</label>
+   </div>
+
+   Notes:
+   - Inputs should include an empty placeholder (" ") so :placeholder-shown works reliably.
+   - Works for input and textarea elements.
+*/
+.floating-label {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.floating-label input,
+.floating-label textarea,
+.floating-label select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 8px;
+  font-size: 14px;
+  background: transparent;
+}
+
+.floating-label label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.15s ease, font-size 0.15s ease, opacity 0.15s ease;
+  font-size: 14px;
+  color: var(--muted, #6b7280);
+  pointer-events: none;
+  background: transparent;
+  padding: 0 4px;
+}
+
+/* Float label when input focused or has content */
+.floating-label input:focus + label,
+.floating-label textarea:focus + label,
+.floating-label input:not(:placeholder-shown) + label,
+.floating-label textarea:not(:placeholder-shown) + label {
+  transform: translateY(-150%);
+  font-size: 12px;
+  opacity: 1;
+  color: var(--foreground, #171717);
+}
+
+/* Focus ring */
+.floating-label input:focus,
+.floating-label textarea:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
+}
+

@@ -1,0 +1,251 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > OrderDTO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.increff.project.dto</a>
+</div>
+
+<h1>Coverage Summary for Class: OrderDTO (com.increff.project.dto)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OrderDTO</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    71.4%
+  </span>
+  <span class="absValue">
+    (5/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66%
+  </span>
+  <span class="absValue">
+    (31/47)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.increff.project.dto;
+&nbsp;
+&nbsp;import com.increff.project.api.ProductAPI;
+&nbsp;import com.increff.project.entity.OrderPojo;
+&nbsp;import com.increff.project.model.data.OrderData;
+&nbsp;import com.increff.project.model.form.*;
+&nbsp;import com.increff.project.model.data.OrderItemData;
+&nbsp;import com.increff.project.utils.helpers.AbstractValidateNormalize;
+&nbsp;import com.increff.project.useCase.OrderUseCase;
+&nbsp;import com.increff.project.model.form.InvoiceForm;
+&nbsp;import com.increff.project.entity.OrderItemPojo;
+&nbsp;import com.increff.project.model.form.PageSizeForm;
+&nbsp;import com.increff.project.utils.utils.InvoiceService;
+&nbsp;import com.increff.project.utils.utils.InvoiceUtil;
+&nbsp;import com.increff.project.utils.utils.OrderUtil;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.PageImpl;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import static com.increff.project.model.helpers.OrderHelper.convertFormToEntity;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;public class OrderDTO extends AbstractValidateNormalize {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private OrderFlow orderFlow;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private InvoiceUtil invoiceUtil;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ProductAPI productAPI;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private InvoiceService invoiceService;
+&nbsp;
+&nbsp;    public void addOrder(OrderCreationForm form) {
+&nbsp;
+&nbsp;        List&lt;OrderItemPojo&gt; newOrderItems = new ArrayList&lt;&gt;();
+&nbsp;
+&nbsp;        for (OrderItemForm itemForm : form.getItems())
+&nbsp;        {
+<b class="nc">&nbsp;            OrderItemPojo entity = convertFormToEntity(itemForm);</b>
+&nbsp;            entity.setProductId((productAPI.getByBarcode(itemForm.getBarcode())).getId());
+&nbsp;            newOrderItems.add(entity);
+&nbsp;        }
+&nbsp;        orderFlow.createOrder(newOrderItems);
+&nbsp;    }
+&nbsp;
+&nbsp;    public void updateOrder(OrderForm form) {
+&nbsp;
+<b class="nc">&nbsp;        validateNormalizeInteger(form.getOrderId(),&quot;Order Id&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;OrderItemData&gt; Items = orderFlow.findOrderItemByOrderId(form.getOrderId());</b>
+<b class="nc">&nbsp;        List&lt;InvoicePojo&gt; InvoiceItems = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        for(OrderItemData item:Items) {</b>
+<b class="nc">&nbsp;            InvoicePojo entity = new InvoicePojo();</b>
+&nbsp;
+<b class="nc">&nbsp;            entity.setOrderId(item.getOrderId());</b>
+<b class="nc">&nbsp;            entity.setProductName(item.getName());</b>
+<b class="nc">&nbsp;            entity.setBarcode(item.getBarcode());</b>
+<b class="nc">&nbsp;            entity.setQuantity(item.getOrderedQty());</b>
+<b class="nc">&nbsp;            entity.setSellingPrice(item.getSellingPrice());</b>
+<b class="nc">&nbsp;            InvoiceItems.add(entity);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        String base64Pdf = invoiceUtil.generateInvoice(InvoiceItems);</b>
+<b class="nc">&nbsp;        System.out.println(base64Pdf);</b>
+&nbsp;
+<b class="nc">&nbsp;        invoiceService.generateInvoiceFromBase64(base64Pdf);</b>
+&nbsp;
+<b class="nc">&nbsp;        orderFlow.updateOrderStatus(form.getOrderId());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;OrderItemData&gt; findOrderItemBy(OrderForm form)
+&nbsp;    {
+<b class="fc">&nbsp;        validateNormalizeInteger(form.getOrderId(),&quot;Order Id&quot;);</b>
+<b class="fc">&nbsp;        return orderFlow.findOrderItemByOrderId(form.getOrderId());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Page&lt;OrderData&gt; getAllOrders(PageSizeHelper form) {
+&nbsp;
+<b class="fc">&nbsp;        Page&lt;OrderPojo&gt; orderPojoPage= orderFlow.getAllOrders(form.getPage(),form.getSize());</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;OrderData&gt; dataList = orderPojoPage.getContent()</b>
+<b class="fc">&nbsp;                .stream()</b>
+<b class="fc">&nbsp;                .map(OrderUtil::convertEntityToData)</b>
+<b class="fc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;
+<b class="fc">&nbsp;        return new PageImpl&lt;&gt;(</b>
+<b class="fc">&nbsp;                dataList,</b>
+<b class="fc">&nbsp;                orderPojoPage.getPageable(),</b>
+<b class="fc">&nbsp;                orderPojoPage.getTotalElements()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public Page&lt;OrderData&gt; findBetweenDates(DatesForm form)
+&nbsp;    {
+<b class="fc">&nbsp;        Page&lt;OrderPojo&gt; page = orderFlow.findBetweenDates(form.getStartDate(), form.getEndDate(),</b>
+<b class="fc">&nbsp;                form.getPage(), form.getSize());</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;OrderData&gt; dataList = page.getContent()</b>
+<b class="fc">&nbsp;                .stream()</b>
+<b class="fc">&nbsp;                .map(OrderUtil::convertEntityToData)</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        return new PageImpl&lt;&gt;(</b>
+<b class="fc">&nbsp;                dataList,</b>
+<b class="fc">&nbsp;                page.getPageable(),</b>
+<b class="fc">&nbsp;                page.getTotalElements()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    public Page&lt;OrderData&gt; getByOrderStatus(StatusForm form){
+<b class="fc">&nbsp;        Page&lt;OrderPojo&gt; page =  orderFlow.getByOrderStatus(form.getStatus(),form.getPage(),form.getSize());</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;OrderData&gt; dataList = page.getContent()</b>
+<b class="fc">&nbsp;                .stream()</b>
+<b class="fc">&nbsp;                .map(OrderUtil::convertEntityToData)</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        return new PageImpl&lt;&gt;(</b>
+<b class="fc">&nbsp;                dataList,</b>
+<b class="fc">&nbsp;                page.getPageable(),</b>
+<b class="fc">&nbsp;                page.getTotalElements()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-10 13:23</div>
+</div>
+</body>
+</html>
